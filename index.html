@@ -16,6 +16,8 @@
     :root {
       --sender-bubble-bg: #6815a3;
       --receiver-bubble-bg: #2EADD4;
+      --sender-name-color: #c990ff;
+      --receiver-name-color: #62d3f5;
       --body-bg-gradient: linear-gradient(135deg, #12031a 0%, #30143a 100%);
       --main-bg: rgba(20, 2, 30, 0.5);
       --glass-bg: rgba(0, 0, 0, 0.25);
@@ -70,36 +72,42 @@
       padding: 1rem;
     }
     
-    .chat-input-box {
-        background: var(--glass-bg);
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 0.75rem 1rem;
-        flex-shrink: 0;
-    }
-
     .title-user { font-weight: 700; font-size: 17px; color: #ffffff; }
     .user-avatar { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; font-size: 22px; }
-    .header-actions button { background: none; border: none; color: #b0b0b0; font-size: 20px; cursor: pointer; padding: 5px; transition: color 0.2s; }
-    .header-actions button:hover { color: white; }
-    #searchContainer { display: flex; align-items: center; gap: 5px; background-color: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 20px; }
-    #searchInput { all: unset; color: white; width: 120px; transition: all 0.3s ease; }
-    #searchResultCounter { font-size: 13px; color: #aaa; min-width: 40px; text-align: center; }
 
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 10px; }
+    /* --- ✨ [إضافة جديدة] تنسيق اسم المرسل --- */
+    .sender-name {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 4px;
+        margin-right: 15px;
+    }
+    .sender-name.sender { color: var(--sender-name-color); }
+    .sender-name.receiver { color: var(--receiver-name-color); }
+    .justify-content-start .sender-name { text-align: right; }
+    .justify-content-end .sender-name { text-align: right; }
+
 
     .message-row { margin-bottom: 0.2rem; }
-    .message-bubble { font-size: 15px; line-height: 1.5; color: #FFFFFF; padding: 10px 15px; display: inline-block; width: fit-content; max-width: 75%; text-align: right; word-wrap: break-word; }
+    .message-bubble { font-size: 15px; line-height: 1.5; color: #FFFFFF; padding: 10px 15px; display: inline-block; width: fit-content; max-width: 100%; text-align: right; word-wrap: break-word; }
     
     .pm-text-send { background: var(--sender-bubble-bg); border-radius: 8px 20px 20px 20px; }
     .pm-text-resive { background: var(--receiver-bubble-bg); border-radius: 20px 8px 20px 20px; }
-
-    .time-pm { font-size: 12px; color: #d0d0d0; opacity: 0.8; margin-right: 8px; user-select: none; }
-    .reply-quote { background: rgba(0,0,0,0.2); border-right: 3px solid var(--receiver-bubble-bg); padding: 8px; margin-bottom: 8px; border-radius: 8px; font-size: 14px; opacity: 0.9; text-align: right; }
-    .pm-text-send .reply-quote { border-right-color: #c990ff; }
-    .reply-quote strong { font-size: 13px; font-weight: 700; display: block; color: #ddd; }
     
+    /* --- ✨ [تعديل] تحسين تنسيق الرد --- */
+    .time-pm { font-size: 12px; color: #d0d0d0; opacity: 0.8; margin-right: 8px; user-select: none; }
+    .reply-quote { background: rgba(0,0,0,0.2); border-right: 3px solid var(--receiver-bubble-bg); padding: 8px 12px; margin-bottom: 8px; border-radius: 8px; font-size: 14px; opacity: 0.9; text-align: right; }
+    .pm-text-send .reply-quote { border-right-color: var(--sender-name-color); }
+    .reply-quote strong { font-size: 13px; font-weight: 700; display: block; color: var(--receiver-name-color); }
+    .pm-text-send .reply-quote strong { color: var(--sender-name-color); }
+    .reply-quote div {
+        white-space: pre-wrap;
+        max-height: 60px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #f0f0f0;
+    }
+
     #uploadContainer { color: white; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; background: transparent; }
     #uploadContainer h1 { font-weight: 700; font-size: 2.5rem; text-shadow: 0 0 15px rgba(0,0,0,0.5); }
     .upload-area { border: 2px dashed #ffffff55; border-radius: 15px; padding: 50px; margin: 20px 0; transition: all 0.3s ease; cursor: pointer; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(10px); max-width: 600px; transform: scale(1); }
@@ -139,15 +147,6 @@
                             <div class="title-user" id="chatTitle"></div>
                             <div id="chatStatus" style="color: #b0b0b0; font-size: 14px;"></div>
                         </div>
-                        <div class="col-auto d-flex align-items-center header-actions">
-                            <div id="searchContainer">
-                                <button id="searchPrevBtn" title="النتيجة السابقة">🔼</button>
-                                <span id="searchResultCounter">0 / 0</span>
-                                <button id="searchNextBtn" title="النتيجة التالية">🔽</button>
-                                <input type="search" id="searchInput" placeholder="بحث..." onkeyup="if(event.key === 'Enter') performSearch()">
-                            </div>
-                            <button onclick="downloadHTML()" title="تحميل المحادثة">💾</button>
-                        </div>
                     </div>
                 </div>
                 <div class="chat-screen" id="chatScreen"></div>
@@ -162,9 +161,6 @@
     const chatSection = document.getElementById('chatSection');
     const uploadArea = document.getElementById('uploadArea');
     const fileInput = document.getElementById('fileInput');
-    
-    let searchResults = [];
-    let currentSearchIndex = -1;
 
     uploadArea.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', (e) => processFiles(e.target.files));
@@ -177,9 +173,6 @@
         uploadArea.classList.remove('dragover');
         processFiles(e.dataTransfer.files);
     });
-    document.getElementById('searchNextBtn').addEventListener('click', navigateSearchResults);
-    document.getElementById('searchPrevBtn').addEventListener('click', navigateSearchResults);
-
 
     function processFiles(files) {
         if (files.length === 0 || !files[0].name.endsWith('.html')) {
@@ -204,65 +197,76 @@
     }
 
     /**
-     * ✨ [دالة التحليل الجديدة]
-     * تقوم هذه الدالة بتحليل بنية ملف HTML الخاص بتيليجرام مباشرةً
-     * وتتعرف على المستخدمين والرسائل بشكل ديناميكي.
+     * ✨ [دالة التحليل المُحسّنة]
+     * تقوم بمسح الرسائل أولاً لإنشاء خريطة IDs للتعامل الصحيح مع الردود،
+     * وتضمن تحديد المرسل بشكل دقيق للرسائل المتتالية.
      */
     function parseHtmlChat(doc) {
         const messages = [];
-        const users = {}; // لتخزين أسماء المستخدمين الفعلية
-        const userMap = {}; // لربط اسم المستخدم بمعرّف فريد (sender/receiver)
+        const users = {};
+        const userMap = {};
         let userCounter = 0;
-        let lastSenderId = null;
+        const messageIdMap = new Map();
+        let currentSenderNameForJoined = null;
 
-        const messageNodes = doc.querySelectorAll('.message.default, .message.service');
+        const allMessageNodes = doc.querySelectorAll('.message.default, .message.service');
 
-        messageNodes.forEach(node => {
-            // التعامل مع فواصل التاريخ
+        // --- ✨ الخطوة الأولى: مسح الرسائل لإنشاء خريطة للردود ---
+        allMessageNodes.forEach(node => {
+            if (node.classList.contains('service')) return;
+            
+            const messageId = node.id.replace('message', '');
+            if (!messageId) return;
+
+            const fromNameElem = node.querySelector('.from_name');
+            if (fromNameElem) {
+                currentSenderNameForJoined = fromNameElem.innerText.trim();
+            }
+
+            const text = node.querySelector('.text')?.innerText.trim() || '';
+            messageIdMap.set(messageId, { author: currentSenderNameForJoined, text });
+        });
+        
+        currentSenderNameForJoined = null; // إعادة تعيين المتغير للمرور الثاني
+
+        // --- ✨ الخطوة الثانية: تحليل الرسائل وبناء العرض ---
+        allMessageNodes.forEach(node => {
             if (node.classList.contains('service')) {
                 const dateText = node.querySelector('.body.details')?.innerText.trim();
-                if (dateText) {
-                    messages.push({ type: 'date', content: dateText });
-                }
+                if (dateText) messages.push({ type: 'date', content: dateText });
                 return;
             }
 
-            // تجاهل الرسائل التي لا تحتوي على نص (مثل الصور فقط)
             const textElement = node.querySelector('.body .text');
-            if (!textElement) return;
+            const mediaElement = node.querySelector('.body .media_wrap');
+            if (!textElement && !mediaElement) return;
 
-            const text = textElement.innerHTML.trim(); // استخدام innerHTML للاحتفاظ بالـ <br>
+            const text = textElement ? textElement.innerHTML.trim() : '[ملف وسائط]';
             const time = node.querySelector('.body .date')?.getAttribute('title').match(/\d{2}:\d{2}:\d{2}/)[0].substring(0, 5) || '';
 
-            let senderNameElement = node.querySelector('.body .from_name');
-            let currentSenderName;
-
-            if (senderNameElement) {
-                currentSenderName = senderNameElement.innerText.trim();
-            } else if (lastSenderId && users[lastSenderId]) {
-                // للرسائل المتتالية، استخدم اسم آخر مرسل
-                currentSenderName = users[lastSenderId].name;
-            } else {
-                return; // لا يمكن تحديد المرسل
+            const fromNameElem = node.querySelector('.body .from_name');
+            if (fromNameElem) {
+                currentSenderNameForJoined = fromNameElem.innerText.trim();
             }
-            
-            if (!userMap[currentSenderName]) {
+            if (!currentSenderNameForJoined) return;
+
+            if (!userMap[currentSenderNameForJoined]) {
                 userCounter++;
                 const userId = `user${userCounter}`;
-                userMap[currentSenderName] = userId;
-                users[userId] = { name: currentSenderName };
+                userMap[currentSenderNameForJoined] = userId;
+                users[userId] = { name: currentSenderNameForJoined };
             }
+            const senderId = userMap[currentSenderNameForJoined];
 
-            const senderId = userMap[currentSenderName];
-            lastSenderId = senderId;
-            
-            // استخراج معلومات الرد
+            // --- ✨ [إصلاح] منطق جديد لاستخراج معلومات الرد ---
             let replyInfo = null;
-            const replyElement = node.querySelector('.body .reply_to');
+            const replyElement = node.querySelector('.body .reply_to a');
             if (replyElement) {
-                const replyText = replyElement.nextElementSibling?.innerText.trim();
-                const replyAuthor = "رسالة سابقة"; // من الصعب تحديد صاحب الرسالة المردود عليها بدقة
-                 replyInfo = { author: replyAuthor, text: replyText };
+                const href = replyElement.getAttribute('href');
+                const repliedMsgId = href.split('message')[1];
+                if (repliedMsgId && messageIdMap.has(repliedMsgId)) {
+                    replyInfo = messageIdMap.get(repliedMsgId);
+                }
             }
 
             messages.push({
@@ -270,20 +274,19 @@
                 user: senderId,
                 content: text,
                 time: time,
-                reply: replyInfo
+                reply: replyInfo,
+                isJoined: !fromNameElem
             });
         });
 
-        // تحديد من هو المرسل ومن المستقبل (لأغراض العرض فقط)
-        const chatParticipants = Object.values(users).map(u => u.name);
-        const sender = chatParticipants[0] || 'المستخدم 1';
-        const receiver = chatParticipants[1] || 'المستخدم 2';
-
-        return { messages, sender, receiver };
+        return { messages, users };
     }
 
-
-    function displayChat({ messages, sender, receiver }) {
+    /**
+     * ✨ [دالة العرض المُحسّنة]
+     * تضيف اسم المستخدم فوق الرسالة الأولى في السلسلة.
+     */
+    function displayChat({ messages, users }) {
         const chatScreen = document.getElementById('chatScreen');
         chatScreen.innerHTML = '';
         if (messages.length === 0) { 
@@ -294,9 +297,8 @@
         uploadContainer.classList.add('hidden');
         chatSection.classList.remove('hidden');
         
-        // لنفترض أن user1 هو المرسل (يمين) و user2 هو المستقبل (يسار)
-        const senderId = 'user1'; 
-        const receiverId = 'user2';
+        const senderId = 'user1';
+        let lastDisplayedSenderId = null;
 
         messages.forEach((msg, index) => {
             if (msg.type === 'date') {
@@ -304,137 +306,63 @@
                 dateDiv.style.textAlign = 'center';
                 dateDiv.style.margin = '25px 0';
                 dateDiv.style.color = '#ccc';
-                dateDiv.innerHTML = `<span style="background:rgba(0,0,0,0.4);padding:5px 15px;border-radius:15px;">${msg.content}</span>`;
+                dateDiv.innerHTML `<span style="background:rgba(0,0,0,0.4);padding:5px 15px;border-radius:15px;">${msg.content}</span>`;
                 chatScreen.appendChild(dateDiv);
+                lastDisplayedSenderId = null; // Reset after date
             } else if (msg.type === 'message') {
                 const messageRow = document.createElement('div');
                 messageRow.className = 'd-flex message-row';
                 
+                // --- ✨ [إضافة] حاوية للرسالة والاسم ---
+                const messageWrapper = document.createElement('div');
+                messageWrapper.style.maxWidth = '75%';
+
                 const bubble = document.createElement('div');
                 bubble.className = 'message-bubble';
                 bubble.dataset.id = index;
 
+                // --- ✨ [إصلاح] عرض معلومات الرد الصحيحة ---
                 let replyHTML = '';
-                if(msg.reply && msg.reply.text) {
-                     replyHTML = `<div class="reply-quote"><strong>${msg.reply.author}</strong><div>${msg.reply.text.replace(/</g, "&lt;")}</div></div>`;
+                if (msg.reply && msg.reply.author) {
+                    const replyAuthorName = msg.reply.author;
+                    const replyAuthorId = Object.keys(users).find(key => users[key].name === replyAuthorName) || '';
+                    
+                    replyHTML = `<div class="reply-quote">
+                                    <strong class="${replyAuthorId === senderId ? 'sender' : 'receiver'}">${replyAuthorName}</strong>
+                                    <div>${msg.reply.text.replace(/</g, "&lt;")}</div>
+                                 </div>`;
                 }
 
                 bubble.innerHTML = `${replyHTML}${msg.content} <span class="time-pm">${msg.time}</span>`;
                 
-                if (msg.user === senderId) {
-                    messageRow.classList.add('justify-content-end');
-                    bubble.classList.add('pm-text-send');
-                } else {
-                    messageRow.classList.add('justify-content-start');
-                    bubble.classList.add('pm-text-resive');
+                const isSender = msg.user === senderId;
+                messageRow.classList.add(isSender ? 'justify-content-end' : 'justify-content-start');
+                bubble.classList.add(isSender ? 'pm-text-send' : 'pm-text-resive');
+                
+                // --- ✨ [إضافة] إظهار اسم المرسل عند بداية سلسلة الرسائل ---
+                if (!msg.isJoined || lastDisplayedSenderId !== msg.user) {
+                    const nameDiv = document.createElement('div');
+                    nameDiv.className = `sender-name ${isSender ? 'sender' : 'receiver'}`;
+                    nameDiv.textContent = users[msg.user].name;
+                    messageWrapper.appendChild(nameDiv);
                 }
                 
-                messageRow.appendChild(bubble);
+                messageWrapper.appendChild(bubble);
+                messageRow.appendChild(messageWrapper);
                 chatScreen.appendChild(messageRow);
+                lastDisplayedSenderId = msg.user;
             }
         });
         
-        document.getElementById('chatTitle').textContent = `${sender} و ${receiver}`;
+        const userNames = Object.values(users).map(u => u.name);
+        document.getElementById('chatTitle').textContent = userNames.join(' و ');
         const avatar = document.getElementById('chatAvatar');
-        avatar.textContent = sender.charAt(0).toUpperCase();
+        avatar.textContent = userNames.length > 0 ? userNames[0].charAt(0).toUpperCase() : '👤';
         avatar.style.backgroundColor = 'var(--sender-bubble-bg)';
         document.getElementById('chatStatus').textContent = `${messages.filter(m => m.type === 'message').length} رسالة`;
         
         chatScreen.scrollTop = chatScreen.scrollHeight;
     }
-
-    function performSearch() {
-        // ... (دوال البحث لم تتغير)
-        clearSearchHighlights();
-        const searchTerm = document.getElementById('searchInput').value;
-        if (!searchTerm.trim()) {
-            updateSearchResultCounter(0, 0);
-            return;
-        }
-
-        const regex = new RegExp(searchTerm.trim(), 'gi');
-        searchResults = [];
-        
-        document.querySelectorAll('.message-bubble').forEach(bubble => {
-            const timeElement = bubble.querySelector('.time-pm');
-            const timeHTML = timeElement ? timeElement.outerHTML : '';
-            if (timeElement) timeElement.remove();
-            
-            const replyElement = bubble.querySelector('.reply-quote');
-            const replyHTML = replyElement ? replyElement.outerHTML : '';
-            if(replyElement) replyElement.remove();
-
-            const contentHTML = bubble.innerHTML;
-            if (regex.test(bubble.innerText)) {
-                searchResults.push(bubble);
-                const highlightedHTML = contentHTML.replace(regex, match => `<mark>${match}</mark>`);
-                bubble.innerHTML = replyHTML + highlightedHTML + timeHTML;
-            } else {
-                bubble.innerHTML = replyHTML + contentHTML + timeHTML;
-            }
-        });
-
-        if (searchResults.length > 0) {
-            currentSearchIndex = 0;
-            navigateToResult(currentSearchIndex);
-        }
-        updateSearchResultCounter(currentSearchIndex + 1, searchResults.length);
-    }
-    
-    function navigateSearchResults(event) {
-        if (searchResults.length === 0) return;
-        if (event.target.id === 'searchNextBtn') {
-            currentSearchIndex = (currentSearchIndex + 1) % searchResults.length;
-        } else {
-            currentSearchIndex = (currentSearchIndex - 1 + searchResults.length) % searchResults.length;
-        }
-        navigateToResult(currentSearchIndex);
-        updateSearchResultCounter(currentSearchIndex + 1, searchResults.length);
-    }
-    
-    function navigateToResult(index) {
-        document.querySelectorAll('.found-message').forEach(el => el.classList.remove('found-message'));
-        const target = searchResults[index];
-        if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            target.classList.add('found-message');
-        }
-    }
-    
-    function updateSearchResultCounter(current, total) {
-       document.getElementById('searchResultCounter').textContent = `${total > 0 ? current : 0} / ${total}`;
-    }
-
-    function clearSearchHighlights() {
-        document.querySelectorAll('.found-message').forEach(el => el.classList.remove('found-message'));
-        document.querySelectorAll('mark').forEach(mark => {
-            const parent = mark.parentNode;
-            if (parent) {
-              parent.replaceChild(document.createTextNode(mark.textContent), mark);
-              parent.normalize();
-            }
-        });
-        searchResults = [];
-        currentSearchIndex = -1;
-    }
-    
-    function downloadHTML() {
-        const chatScreen = document.getElementById('chatScreen');
-        if (!chatScreen || !chatScreen.innerHTML.trim()) { alert("لا يوجد محتوى لتحميله."); return; }
-        const style = `<style>body{font-family:sans-serif;background:#1a1a1a;color:white;padding:20px;}.chat-screen{max-width:800px;margin:auto;}.d-flex{display:flex;}.justify-content-start{justify-content:flex-start;}.justify-content-end{justify-content:flex-end;}.message-row{margin-bottom:0.2rem;}.message-bubble{font-size:15px;line-height:1.5;padding:10px 15px;width:fit-content;max-width:75%;border-radius:20px;word-wrap:break-word;}.pm-text-send{background:#6815a3;border-radius:8px 20px 20px 20px;color:white;}.pm-text-resive{background:#2EADD4;border-radius:20px 8px 20px 20px;color:white;}.time-pm{font-size:12px;opacity:0.8;margin-right:8px;}.reply-quote{background:rgba(0,0,0,0.2);border-right:3px solid;padding:8px;margin-bottom:8px;border-radius:8px;}.date-separator{text-align:center;margin:25px 0;color:#ccc;} .date-separator span{background:rgba(0,0,0,0.4);padding:5px 15px;border-radius:15px;}</style>`;
-        const htmlContent = `<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>المحادثة المحولة</title>${style}</head><body><div class="chat-screen">${chatScreen.innerHTML}</div></body></html>`;
-
-        const blob = new Blob([htmlContent], { type: 'text/html' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'المحادثة_المحولة.html';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-
 </script>
 
 </body>
