@@ -10,229 +10,65 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous" />
   
   <style>
-    /* BASE STYLES FROM YOUR CSS FILE */
-    @font-face {
-      font-family: "Segoe UI Variable Static Small";
-      /* src: url("assets/font/Segoe UI.ttf"); */ /* Font path commented out */
-    }
-
-    @font-face {
-      font-family: "Segoe UI Variable Static Display";
-      /* src: url("assets/font/Segoe UI Bold.ttf"); */ /* Font path commented out */
+    :root {
+      --sender-bubble-bg: #3a0e61;
+      --receiver-bubble-bg: #2EADD4;
+      --body-bg: url("https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop");
+      --main-bg: rgba(58, 58, 58, 0.4);
+      --glass-bg: rgba(0, 0, 0, 0.2);
     }
 
     html {
       box-sizing: border-box;
-      font-size: 16px;
     }
 
     body {
-      background-image: url("https://images.unsplash.com/photo-1614850523011-8f49ffc73908?q=80&w=2070&auto=format&fit=crop"); /* Replaced local background */
+      background-image: var(--body-bg);
       background-repeat: no-repeat;
       background-size: cover;
       background-position: center;
       font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       min-height: 100vh;
+      padding-top: 2rem;
+      padding-bottom: 2rem;
     }
 
-    *,
-    *:before,
-    *:after {
+    *, *:before, *:after {
       box-sizing: inherit;
     }
 
+    /* Main App Window */
+    .app-window {
+      background: var(--main-bg);
+      backdrop-filter: blur(100px);
+      border-radius: 8px;
+      box-shadow: 0px 32px 64px rgba(0, 0, 0, 0.56), 0px 2px 21px rgba(0, 0, 0, 0.55);
+      min-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Header / Navbar */
     .nav-bar {
       background: #202020;
-      border-radius: 7px 7px 0px 0px;
-    }
-
-    #title-app {
-      font-family: "Segoe UI Variable Static Small";
-      font-style: normal;
-      font-weight: 400;
-      font-size: 12px;
-      line-height: 16px;
       color: #ffffff;
-      padding: 10px;
+      padding: 0.5rem 1rem;
+      flex-shrink: 0;
     }
 
-    .section_main {
-      box-shadow: 0px 32px 64px rgba(0, 0, 0, 0.56), 0px 2px 21px rgba(0, 0, 0, 0.55);
-      border-radius: 7px;
-      min-height: 85vh; /* Added min-height */
-    }
-
-    .Chats span {
-      font-weight: 600;
-      font-size: 14px;
-      line-height: 20px;
-      color: #ffffff;
-      margin-right: 10px;
-    }
-
-    .search {
-      all: unset;
-      padding: 3px 5px 3px 5px;
-      background: rgba(255, 255, 255, 0.06);
-      border-radius: 5px;
-      border-bottom: solid 1px white;
-      width: 90%;
-      color: white;
-    }
-
-    .search::placeholder {
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.786);
-    }
-
-    .anyClass {
-      width: 103.5%;
-      margin-top: 20px;
-      height: 70vh;
-      overflow-y: scroll;
-      overflow-x: hidden;
-      border-radius: 0px 0px 0px 7px;
-    }
-
-    .caht-list-box {
-      background: linear-gradient(108.74deg, rgba(255, 255, 255, 0.038) 0%, rgba(255, 255, 255, 0) 100%);
-      box-shadow: 0px 0px 50px -25px rgba(0, 0, 0, 0.5);
+    /* Chat Header */
+    .chat-info-box {
+      background: var(--glass-bg);
+      border-bottom: 0.5px solid rgb(71, 71, 71);
       backdrop-filter: blur(100px);
-      border-radius: 0px 0px 0px 7px;
+      align-items: center;
+      min-height: 65px;
+      padding: 0.5rem 1.5rem;
+      flex-shrink: 0;
     }
     
-    .chat-screen {
-        height: calc(85vh - 120px); /* Adjusted height calculation */
-        overflow-y: auto;
-        overflow-x: hidden;
-        padding: 10px;
-    }
-    
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { box-shadow: inset 0 0 5px rgba(128, 128, 128, 0.514); border-radius: 10px; }
-    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.5442); border-radius: 9999px; }
-
     .title-user { font-weight: 600; font-size: 16px; line-height: 21px; color: #ffffff; }
-    .short-msg { font-size: 14px; line-height: 19px; color: #888888; }
-    
-    .chate-info-box {
-        background: rgba(0, 0, 0, 0.2);
-        box-shadow: 0px 0px 50px -25px rgba(0, 0, 0, 0.5);
-        border-bottom: 0.5px solid rgb(71, 71, 71);
-        backdrop-filter: blur(100px);
-        align-items: center;
-        min-height: 60px; /* Added min height */
-    }
-    
-    .box-chat {
-        background: rgba(58, 58, 58, 0.3);
-        backdrop-filter: blur(100px);
-        border-radius: 0px 0px 7px 0px;
-        display: flex; /* Added flex for layout */
-        flex-direction: column; /* Added flex for layout */
-    }
-
-    .pm-text-resive {
-      font-size: 14px;
-      line-height: 1.4;
-      color: #FFFFFF;
-      margin-top: 7px;
-      margin-left: 10px;
-      padding: 10px 15px;
-      background: #2EAD D4;
-      border-radius: 14px 14px 14px 4px;
-      display: inline-block;
-      width: fit-content;
-      max-width: 70%;
-      word-wrap: break-word;
-    }
-
-    .pm-text-send {
-      font-size: 14px;
-      line-height: 1.4;
-      color: #FFFFFF;
-      margin-top: 7px;
-      margin-right: 10px;
-      padding: 10px 15px;
-      background: #3a0e61;
-      border-radius: 14px 14px 4px 14px;
-      display: inline-block;
-      width: fit-content;
-      max-width: 70%;
-      word-wrap: break-word;
-    }
-    
-    .pm-emoji-only {
-        background: transparent !important;
-        font-size: 48px;
-        padding: 5px;
-    }
-
-    .time-pm {
-      font-size: 12px;
-      line-height: 14px;
-      text-align: right;
-      color: #A1AAB3;
-      margin-right: 8px;
-      user-select: none;
-    }
-
-    .box-input-chat {
-        background: rgba(32, 32, 32, 0.5);
-        border-radius: 8px;
-        padding: 10px;
-        margin: 10px;
-    }
-    
-    .input-chat { all: unset; color: #cecece; width: 100%;}
-    .input-chat::placeholder { color: #8A8A8A; }
-
-
-    /* --- STYLES FOR UPLOAD & NEW FEATURES --- */
-    #uploadContainer {
-        color: white;
-        text-align: center;
-        padding: 50px 20px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        min-height: 85vh;
-    }
-
-    .upload-area {
-        border: 2px dashed #ffffff55;
-        border-radius: 15px;
-        padding: 60px 40px;
-        margin: 20px 0;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        background: rgba(0, 0, 0, 0.2);
-        backdrop-filter: blur(10px);
-        max-width: 600px;
-    }
-
-    .upload-area:hover, .upload-area.dragover {
-        background: rgba(0, 0, 0, 0.4);
-        border-color: #ffffff99;
-    }
-
-    .upload-icon { font-size: 48px; color: #fff; margin-bottom: 15px; }
-    .file-input { display: none; }
-
-    .date-separator {
-        text-align: center;
-        margin: 25px 0;
-        color: #ccc;
-        font-size: 14px;
-    }
-
-    .date-separator span {
-        background: rgba(0, 0, 0, 0.3);
-        padding: 5px 15px;
-        border-radius: 15px;
-    }
-    
     .user-avatar {
         width: 45px;
         height: 45px;
@@ -243,114 +79,129 @@
         font-weight: bold;
         color: white;
         font-size: 20px;
-        background-color: #3a0e61;
     }
 
-    #searchContainer { display: flex; align-items: center; gap: 5px; }
-    #searchInput {
-        border: none;
-        border-radius: 15px;
-        padding: 6px 10px;
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
-        outline: none;
-        width: 150px;
-        transition: all 0.3s ease;
+    /* Chat Screen (Messages Area) */
+    .chat-screen {
+      flex-grow: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 1rem;
     }
+    
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.4); border-radius: 10px; }
+
+    /* Message Bubbles */
+    .pm-text-resive, .pm-text-send {
+      font-size: 15px;
+      line-height: 1.5;
+      color: #FFFFFF;
+      margin-top: 0.5rem;
+      padding: 10px 15px;
+      display: inline-block;
+      width: fit-content;
+      max-width: 75%;
+      word-wrap: break-word;
+      text-align: right;
+    }
+    .pm-text-send { background: var(--sender-bubble-bg); border-radius: 18px 18px 4px 18px; margin-right: 10px;}
+    .pm-text-resive { background: var(--receiver-bubble-bg); border-radius: 18px 18px 18px 4px; margin-left: 10px;}
+    .pm-emoji-only { background: transparent !important; font-size: 48px; padding: 5px; box-shadow: none; }
+    .time-pm { font-size: 12px; color: #A1AAB3; margin-right: 8px; user-select: none; }
+
+    /* Input Area */
+    .chat-input-box {
+        background: var(--glass-bg);
+        border-top: 0.5px solid rgb(71, 71, 71);
+        padding: 0.75rem 1rem;
+        flex-shrink: 0;
+    }
+    .input-wrapper { background: rgba(32, 32, 32, 0.5); border-radius: 8px; padding: 0.75rem; }
+    .input-chat { all: unset; color: #cecece; width: 100%;}
+    .input-chat::placeholder { color: #8A8A8A; }
+
+    /* --- UPLOAD & OTHER FEATURES STYLES --- */
+    #uploadContainer { text-align: center; padding: 50px 20px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    .upload-area { border: 2px dashed #ffffff55; border-radius: 15px; padding: 60px 40px; margin: 20px 0; transition: all 0.3s ease; cursor: pointer; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(10px); max-width: 600px; }
+    .upload-area:hover, .upload-area.dragover { background: rgba(0, 0, 0, 0.4); border-color: #ffffff99; }
+    .upload-icon { font-size: 48px; color: #fff; margin-bottom: 15px; }
+    .file-input { display: none; }
+
+    .date-separator { text-align: center; margin: 25px 0; color: #ccc; font-size: 14px; }
+    .date-separator span { background: rgba(0, 0, 0, 0.4); padding: 5px 15px; border-radius: 15px; }
+    
+    #searchContainer { display: flex; align-items: center; gap: 5px; }
+    #searchInput { border: none; border-radius: 15px; padding: 6px 10px; background: rgba(255, 255, 255, 0.1); color: white; outline: none; width: 150px; transition: all 0.3s ease; }
     #searchInput:focus { background: rgba(255, 255, 255, 0.2); width: 200px; }
     #searchContainer button { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
     
     mark { background-color: #ffeb3b; color: black; border-radius: 3px; padding: 1px 3px; }
-
   </style>
 </head>
 
 <body>
   <div class="container">
-    <div class="row justify-content-center main-div">
-      <div class="col-10 mt-5">
-        
-        <div class="row nav-bar">
-          <div class="col-12">
-            <span id="title-app">Telegram Chat Viewer</span>
-          </div>
-        </div>
-        <div id="uploadContainer">
-          <div class="upload-area" id="uploadArea">
-              <div class="upload-icon">📁</div>
-              <h3>اسحب ملفات المحادثة هنا أو اضغط للاختيار</h3>
-              <p>يدعم ملفات .txt و .html (يمكنك رفع أكثر من ملف)</p>
-              <input type="file" id="fileInput" class="file-input" accept=".txt,.html" multiple>
-          </div>
-          <p>ارفع ملف محادثة تم تصديره من تيليجرام أو أي تطبيق آخر لعرضه.</p>
-        </div>
-
-
-        <section id="chatSection" style="display: none;">
-          <div class="row section_main">
-            <div class="col-4 caht-list-box">
-              <div class="row">
-                <div class="col-12 Chats p-3">
-                  <span>☰</span>
-                  <span>المحادثات</span>
-                </div>
-              </div>
-              <div class="row"><div class="col-12"><form><input class="search" type="text" placeholder="بحث..." /></form></div></div>
-              <div class="anyClass">
-                <div style="padding: 15px; color: white; opacity: 0.7;">
-                  قائمة المحادثات هنا (هذا الجزء للعرض فقط).
-                </div>
-              </div>
+    <div class="row justify-content-center">
+      <div class="col-md-9 col-lg-8">
+        <div class="app-window">
+            
+            <div class="nav-bar">
+                <span>Telegram Chat Viewer</span>
             </div>
 
-            <div class="col-8 box-chat">
-              <div class="row pt-2 pb-2 chate-info-box">
-                <div class="col-6">
-                  <div class="row align-items-center">
-                    <div class="col-2">
-                        <div class="user-avatar" id="chatAvatar">?</div>
+            <div id="uploadContainer">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📁</div>
+                    <h3>اسحب ملفات المحادثة هنا أو اضغط للاختيار</h3>
+                    <p>يدعم ملفات .txt و .html (يمكنك رفع أكثر من ملف)</p>
+                    <input type="file" id="fileInput" class="file-input" accept=".txt,.html" multiple>
+                </div>
+                <p style="color: #ccc;">ارفع ملف محادثة تم تصديره لعرضه بالتصميم الجديد</p>
+            </div>
+
+            <div id="chatSection" style="display: none; flex-grow: 1; display: flex; flex-direction: column;">
+                <div class="chat-info-box">
+                    <div class="row align-items-center">
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <div class="user-avatar" id="chatAvatar"></div>
+                                <div class="mx-3">
+                                    <span class="title-user" id="chatTitle">اسم المحادثة</span>
+                                    <div class="short-msg-meadia" id="chatStatus" style="color: #888888;">... رسالة</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 d-flex justify-content-end">
+                            <div id="searchContainer">
+                                <input type="search" id="searchInput" placeholder="بحث..." onkeyup="if(event.key === 'Enter') performSearch()">
+                                <button onclick="performSearch()" title="بحث">🔍</button>
+                                <button onclick="clearSearch()" title="إلغاء البحث">❌</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-9">
-                      <span class="title-user" id="chatTitle">اسم المحادثة</span>
-                      <span class="short-msg-meadia" id="chatStatus" style="color: #888888;">... رسالة</span>
+                </div>
+
+                <div class="chat-screen" id="chatScreen">
                     </div>
-                  </div>
-                </div>
-                <div class="col-6 d-flex justify-content-end align-items-center">
-                    <div id="searchContainer">
-                        <input type="search" id="searchInput" placeholder="بحث..." onkeyup="if(event.key === 'Enter') performSearch()">
-                        <button onclick="performSearch()" title="بحث">🔍</button>
-                        <button onclick="clearSearch()" title="إلغاء البحث">❌</button>
+
+                <div class="chat-input-box">
+                    <div class="input-wrapper d-flex align-items-center">
+                        <div style="cursor: pointer; font-size: 22px;">📎</div>
+                        <div class="flex-grow-1 mx-3">
+                            <input class="input-chat" type="text" placeholder="اكتب رسالة..." />
+                        </div>
+                        <div style="cursor: pointer; font-size: 22px;">🙂</div>
                     </div>
                 </div>
-              </div>
-              <div class="chat-screen" id="chatScreen">
-                </div>
-              <div class="p-2">
-                <div class="row box-input-chat align-items-center">
-                  <div class="col-1 text-center" style="cursor: pointer;">📎</div>
-                  <div class="col-9">
-                    <input class="input-chat" type="text" placeholder="اكتب رسالة..." />
-                  </div>
-                  <div class="col-2 d-flex justify-content-end">
-                    <div style="cursor: pointer; font-size: 20px;">🙂</div>
-                    <div style="cursor: pointer; font-size: 20px; margin-right: 15px;">🎤</div>
-                  </div>
-                </div>
-              </div>
-              </div>
-          </div>
-        </section>
+            </div>
         </div>
+      </div>
     </div>
   </div>
 
 <script>
-    // --- All JavaScript Logic from previous request, adapted for the new design ---
-
-    let parsedMessages = [];
-
-    // --- File Upload Logic ---
     const uploadContainer = document.getElementById('uploadContainer');
     const chatSection = document.getElementById('chatSection');
     const uploadArea = document.getElementById('uploadArea');
@@ -360,10 +211,7 @@
     fileInput.addEventListener('change', (e) => processFiles(e.target.files));
 
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        uploadArea.addEventListener(eventName, e => {
-            e.preventDefault();
-            e.stopPropagation();
-        }, false);
+        uploadArea.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
     });
 
     uploadArea.addEventListener('dragover', () => uploadArea.classList.add('dragover'));
@@ -375,28 +223,23 @@
 
     function processFiles(files) {
         if (files.length === 0) return;
-
-        const readPromises = Array.from(files).map(file => {
-            return new Promise((resolve, reject) => {
-                if (!file.name.endsWith('.txt') && !file.name.endsWith('.html')) {
-                    console.warn(`Skipping unsupported file: ${file.name}`);
-                    resolve(''); 
-                    return;
+        const readPromises = Array.from(files).map(file => new Promise((resolve, reject) => {
+            if (!file.name.endsWith('.txt') && !file.name.endsWith('.html')) {
+                resolve(''); return;
+            }
+            const reader = new FileReader();
+            reader.onload = e => {
+                let content = e.target.result;
+                if (file.name.endsWith('.html')) {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(content, 'text/html');
+                    content = doc.body.innerText;
                 }
-                const reader = new FileReader();
-                reader.onload = e => {
-                    let content = e.target.result;
-                    if (file.name.endsWith('.html')) {
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(content, 'text/html');
-                        content = doc.body.innerText;
-                    }
-                    resolve(content);
-                };
-                reader.onerror = reject;
-                reader.readAsText(file, 'UTF-8');
-            });
-        });
+                resolve(content);
+            };
+            reader.onerror = reject;
+            reader.readAsText(file, 'UTF-8');
+        }));
 
         Promise.all(readPromises).then(contents => {
             const combinedContent = contents.join('\n\n');
@@ -404,83 +247,85 @@
                 alert('الملفات المرفوعة فارغة أو غير مدعومة.');
                 return;
             }
-            parseMessages(combinedContent);
-            displayChat();
+            const parsedMessages = parseMessages(combinedContent);
+            displayChat(parsedMessages);
         }).catch(error => {
             console.error('Error reading files:', error);
             alert('حدث خطأ أثناء قراءة الملفات.');
         });
     }
 
-    // --- Message Parsing Logic ---
+    /**
+     * ✅ **FIXED: Professional Message Parsing Logic**
+     * This function now correctly identifies the current user and keeps them
+     * for consecutive messages until a new user identifier is found.
+     */
     function parseMessages(content) {
         const lines = content.split('\n');
-        parsedMessages = [];
-        let currentDate = '';
-        let currentUser = '';
-        let currentTime = '';
+        const parsedMessages = [];
+        let currentUser = null; // Start with no user
+        let currentTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 
-        for (let i = 0; i < lines.length; i++) {
-            let line = lines[i].trim().replace(/^\uFEFF/, '').replace(/\s+/g, ' ');
-            if (!line) continue;
+        for (const line of lines) {
+            const trimmedLine = line.trim().replace(/^\uFEFF/, '');
+            if (!trimmedLine) continue;
 
-            if (line.match(/\d{1,2}\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}/) ||
-                line.match(/\d{1,2}\s+(يناير|فبراير|مارس|أبريل|مايو|يونيو|يوليو|أغسطس|سبتمبر|أكتوبر|نوفمبر|ديسمبر)\s+\d{4}/)) {
-                currentDate = line;
-                parsedMessages.push({ type: 'date', content: currentDate });
+            // Check for Date Separator
+            if (trimmedLine.match(/\d{1,2}\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}/i)) {
+                parsedMessages.push({ type: 'date', content: trimmedLine });
                 continue;
             }
 
-            // Simple user detection: assumes alternating speakers if not explicit
-            if (line.match(/^(User1|User2|M|J|Maryoma|Jyyyy)\.?$/i)) {
-                 currentUser = line.match(/^(J|Jyyyy)$/i) ? 'J' : 'M';
-                 continue;
-            }
-             
-            const timeMatch = line.match(/^(\d{1,2}:\d{2})$/);
+            // Check for Time
+            const timeMatch = trimmedLine.match(/^(\d{1,2}:\d{2})$/);
             if (timeMatch) {
                 currentTime = timeMatch[1];
                 continue;
             }
-
-            if (line.match(/^(gif|sticker|photo|video|document|contact|location)/i) || line.endsWith('MB') || line.endsWith('KB')) {
-                continue; // Skip media messages for this viewer
+            
+            // Check for User Identifier
+            let isUserIdentifier = false;
+            if (trimmedLine.match(/^(M|Maryoma)\.?$/i)) {
+                currentUser = 'M'; // User 'M' will be the sender (right side)
+                isUserIdentifier = true;
+            } else if (trimmedLine.match(/^(J|Jyyyy)\.?$/i)) {
+                currentUser = 'J'; // User 'J' will be the receiver (left side)
+                isUserIdentifier = true;
             }
 
-            if (line) {
-                 // Switch user if not explicitly defined line-by-line
-                if (parsedMessages.length > 0 && parsedMessages[parsedMessages.length - 1].type === 'message') {
-                     const lastUser = parsedMessages[parsedMessages.length - 1].user;
-                     currentUser = lastUser === 'M' ? 'J' : 'M';
-                } else {
-                     currentUser = 'M'; // Start with M
-                }
-                const emojiOnlyMatch = line.match(/^[\u{1F300}-\u{1F9FF}\s]+$/u);
+            // If the line is just a user ID, or a media message, skip it.
+            if (isUserIdentifier || trimmedLine.match(/^(gif|sticker|photo|video)/i)) {
+                continue;
+            }
+
+            // If we have a current user, this line is their message
+            if (currentUser) {
+                const emojiOnlyMatch = trimmedLine.match(/^[\u{1F300}-\u{1F9FF}\s]+$/u);
                 parsedMessages.push({
                     type: 'message',
                     user: currentUser,
-                    content: line,
-                    time: currentTime || new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
+                    content: trimmedLine,
+                    time: currentTime,
                     isEmoji: !!emojiOnlyMatch
                 });
             }
         }
+        return parsedMessages;
     }
 
-    // --- Chat Display Logic ---
-    function displayChat() {
+    function displayChat(messages) {
         const chatScreen = document.getElementById('chatScreen');
         chatScreen.innerHTML = '';
         
-        if (parsedMessages.length === 0) {
+        if (messages.length === 0) {
             alert("لم يتم العثور على رسائل قابلة للعرض في الملف.");
             return;
         }
 
         uploadContainer.style.display = 'none';
-        chatSection.style.display = 'block';
+        chatSection.style.display = 'flex';
 
-        parsedMessages.forEach(msg => {
+        messages.forEach(msg => {
             if (msg.type === 'date') {
                 const dateDiv = document.createElement('div');
                 dateDiv.className = 'date-separator';
@@ -499,26 +344,22 @@
                 } else { // Receiver
                     bubble.className = 'pm-text-resive';
                 }
-
-                if (msg.isEmoji) {
-                    bubble.classList.add('pm-emoji-only');
-                }
+                if (msg.isEmoji) bubble.classList.add('pm-emoji-only');
                 
                 messageRow.appendChild(bubble);
                 chatScreen.appendChild(messageRow);
             }
         });
         
-        // Update header
         document.getElementById('chatTitle').textContent = `محادثة خاصة`;
-        document.getElementById('chatAvatar').textContent = `💬`;
-        document.getElementById('chatStatus').textContent = `${parsedMessages.filter(m => m.type === 'message').length} رسالة`;
+        const avatar = document.getElementById('chatAvatar');
+        avatar.textContent = `💬`;
+        avatar.style.backgroundColor = 'var(--receiver-bubble-bg)';
+        document.getElementById('chatStatus').textContent = `${messages.filter(m => m.type === 'message').length} رسالة`;
         
-        // Scroll to bottom
         chatScreen.scrollTop = chatScreen.scrollHeight;
     }
 
-    // --- Search Logic ---
     function performSearch() {
         clearSearch(true);
         const searchTerm = document.getElementById('searchInput').value;
@@ -542,9 +383,7 @@
             }
         });
 
-        if (matchCount === 0) {
-            alert('لم يتم العثور على نتائج للبحث.');
-        }
+        if (matchCount === 0) alert('لم يتم العثور على نتائج للبحث.');
     }
 
     function clearSearch(keepInput = false) {
@@ -555,12 +394,9 @@
               parent.normalize();
             }
         });
-        if (!keepInput) {
-            document.getElementById('searchInput').value = '';
-        }
+        if (!keepInput) document.getElementById('searchInput').value = '';
     }
 </script>
-
 
 </body>
 </html>
