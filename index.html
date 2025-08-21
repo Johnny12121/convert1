@@ -75,7 +75,6 @@
     .title-user { font-weight: 700; font-size: 17px; color: #ffffff; }
     .user-avatar { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; font-size: 22px; }
 
-    /* --- ✨ [إضافة جديدة] تنسيق اسم المرسل --- */
     .sender-name {
         font-size: 14px;
         font-weight: 700;
@@ -94,7 +93,6 @@
     .pm-text-send { background: var(--sender-bubble-bg); border-radius: 8px 20px 20px 20px; }
     .pm-text-resive { background: var(--receiver-bubble-bg); border-radius: 20px 8px 20px 20px; }
     
-    /* --- ✨ [تعديل] تحسين تنسيق الرد --- */
     .time-pm { font-size: 12px; color: #d0d0d0; opacity: 0.8; margin-right: 8px; user-select: none; }
     .reply-quote { background: rgba(0,0,0,0.2); border-right: 3px solid var(--receiver-bubble-bg); padding: 8px 12px; margin-bottom: 8px; border-radius: 8px; font-size: 14px; opacity: 0.9; text-align: right; }
     .pm-text-send .reply-quote { border-right-color: var(--sender-name-color); }
@@ -114,7 +112,6 @@
     .upload-area:hover, .upload-area.dragover { background: rgba(0, 0, 0, 0.4); border-color: #ffffff99; transform: scale(1.03); }
     
     .hidden { display: none !important; }
-    .found-message { box-shadow: 0 0 10px 3px #ffeb3b; border-radius: 20px; }
   </style>
 </head>
 
@@ -195,11 +192,10 @@
         reader.onerror = () => alert('لا يمكن قراءة الملف.');
         reader.readAsText(file, 'UTF-8');
     }
-
+    
     /**
-     * ✨ [دالة التحليل المُحسّنة]
-     * تقوم بمسح الرسائل أولاً لإنشاء خريطة IDs للتعامل الصحيح مع الردود،
-     * وتضمن تحديد المرسل بشكل دقيق للرسائل المتتالية.
+     * ✨ [دالة التحليل الأكثر استقرارًا]
+     * تم تحسينها لتكون أكثر متانة وتجنب الأخطاء عند تحليل الملف.
      */
     function parseHtmlChat(doc) {
         const messages = [];
@@ -207,29 +203,29 @@
         const userMap = {};
         let userCounter = 0;
         const messageIdMap = new Map();
-        let currentSenderNameForJoined = null;
+        let currentSenderName = null;
 
         const allMessageNodes = doc.querySelectorAll('.message.default, .message.service');
 
-        // --- ✨ الخطوة الأولى: مسح الرسائل لإنشاء خريطة للردود ---
+        // --- الخطوة الأولى: بناء خريطة الرسائل للتعامل مع الردود ---
         allMessageNodes.forEach(node => {
-            if (node.classList.contains('service')) return;
+            if (!node.id || node.classList.contains('service')) return;
             
             const messageId = node.id.replace('message', '');
-            if (!messageId) return;
-
-            const fromNameElem = node.querySelector('.from_name');
+            const fromNameElem = node.querySelector('.body .from_name');
             if (fromNameElem) {
-                currentSenderNameForJoined = fromNameElem.innerText.trim();
+                currentSenderName = fromNameElem.innerText.trim();
             }
-
-            const text = node.querySelector('.text')?.innerText.trim() || '';
-            messageIdMap.set(messageId, { author: currentSenderNameForJoined, text });
+            
+            const text = node.querySelector('.body .text')?.innerText.trim() || '';
+            if (currentSenderName) {
+                messageIdMap.set(messageId, { author: currentSenderName, text });
+            }
         });
         
-        currentSenderNameForJoined = null; // إعادة تعيين المتغير للمرور الثاني
+        currentSenderName = null; // إعادة تعيين
 
-        // --- ✨ الخطوة الثانية: تحليل الرسائل وبناء العرض ---
+        // --- الخطوة الثانية: تحليل الرسائل لبناء العرض ---
         allMessageNodes.forEach(node => {
             if (node.classList.contains('service')) {
                 const dateText = node.querySelector('.body.details')?.innerText.trim();
@@ -237,33 +233,37 @@
                 return;
             }
 
-            const textElement = node.querySelector('.body .text');
-            const mediaElement = node.querySelector('.body .media_wrap');
+            const bodyElem = node.querySelector('.body');
+            if (!bodyElem) return;
+
+            const textElement = bodyElem.querySelector('.text');
+            const mediaElement = bodyElem.querySelector('.media_wrap');
             if (!textElement && !mediaElement) return;
 
             const text = textElement ? textElement.innerHTML.trim() : '[ملف وسائط]';
-            const time = node.querySelector('.body .date')?.getAttribute('title').match(/\d{2}:\d{2}:\d{2}/)[0].substring(0, 5) || '';
+            const time = bodyElem.querySelector('.date')?.getAttribute('title')?.match(/\d{2}:\d{2}:\d{2}/)?.[0].substring(0, 5) || '';
 
-            const fromNameElem = node.querySelector('.body .from_name');
+            const fromNameElem = bodyElem.querySelector('.from_name');
             if (fromNameElem) {
-                currentSenderNameForJoined = fromNameElem.innerText.trim();
+                currentSenderName = fromNameElem.innerText.trim();
             }
-            if (!currentSenderNameForJoined) return;
+            if (!currentSenderName) return; // تجاهل الرسائل بدون مرسل معروف
 
-            if (!userMap[currentSenderNameForJoined]) {
+            if (!userMap[currentSenderName]) {
                 userCounter++;
                 const userId = `user${userCounter}`;
-                userMap[currentSenderNameForJoined] = userId;
-                users[userId] = { name: currentSenderNameForJoined };
+                userMap[currentSenderName] = userId;
+                users[userId] = { name: currentSenderName };
             }
-            const senderId = userMap[currentSenderNameForJoined];
-
-            // --- ✨ [إصلاح] منطق جديد لاستخراج معلومات الرد ---
+            const senderId = userMap[currentSenderName];
+            
             let replyInfo = null;
-            const replyElement = node.querySelector('.body .reply_to a');
-            if (replyElement) {
-                const href = replyElement.getAttribute('href');
-                const repliedMsgId = href.split('message')[1];
+            const replyLinkElem = bodyElem.querySelector('.reply_to a');
+            if (replyLinkElem) {
+                const href = replyLinkElem.getAttribute('href');
+                const repliedMsgIdMatch = href?.match(/message(\d+)/);
+                const repliedMsgId = repliedMsgIdMatch ? repliedMsgIdMatch[1] : null;
+
                 if (repliedMsgId && messageIdMap.has(repliedMsgId)) {
                     replyInfo = messageIdMap.get(repliedMsgId);
                 }
@@ -282,10 +282,7 @@
         return { messages, users };
     }
 
-    /**
-     * ✨ [دالة العرض المُحسّنة]
-     * تضيف اسم المستخدم فوق الرسالة الأولى في السلسلة.
-     */
+
     function displayChat({ messages, users }) {
         const chatScreen = document.getElementById('chatScreen');
         chatScreen.innerHTML = '';
@@ -306,14 +303,14 @@
                 dateDiv.style.textAlign = 'center';
                 dateDiv.style.margin = '25px 0';
                 dateDiv.style.color = '#ccc';
-                dateDiv.innerHTML `<span style="background:rgba(0,0,0,0.4);padding:5px 15px;border-radius:15px;">${msg.content}</span>`;
+                // --- ✨ [إصلاح] إصلاح خطأ بناء الجملة هنا ---
+                dateDiv.innerHTML = `<span style="background:rgba(0,0,0,0.4);padding:5px 15px;border-radius:15px;">${msg.content}</span>`;
                 chatScreen.appendChild(dateDiv);
-                lastDisplayedSenderId = null; // Reset after date
+                lastDisplayedSenderId = null;
             } else if (msg.type === 'message') {
                 const messageRow = document.createElement('div');
                 messageRow.className = 'd-flex message-row';
                 
-                // --- ✨ [إضافة] حاوية للرسالة والاسم ---
                 const messageWrapper = document.createElement('div');
                 messageWrapper.style.maxWidth = '75%';
 
@@ -321,14 +318,14 @@
                 bubble.className = 'message-bubble';
                 bubble.dataset.id = index;
 
-                // --- ✨ [إصلاح] عرض معلومات الرد الصحيحة ---
                 let replyHTML = '';
                 if (msg.reply && msg.reply.author) {
                     const replyAuthorName = msg.reply.author;
                     const replyAuthorId = Object.keys(users).find(key => users[key].name === replyAuthorName) || '';
+                    const replyAuthorClass = (users[replyAuthorId] && userMap[users[replyAuthorId].name] === senderId) ? 'sender' : 'receiver';
                     
                     replyHTML = `<div class="reply-quote">
-                                    <strong class="${replyAuthorId === senderId ? 'sender' : 'receiver'}">${replyAuthorName}</strong>
+                                    <strong class="${replyAuthorClass}">${replyAuthorName}</strong>
                                     <div>${msg.reply.text.replace(/</g, "&lt;")}</div>
                                  </div>`;
                 }
@@ -339,16 +336,15 @@
                 messageRow.classList.add(isSender ? 'justify-content-end' : 'justify-content-start');
                 bubble.classList.add(isSender ? 'pm-text-send' : 'pm-text-resive');
                 
-                // --- ✨ [إضافة] إظهار اسم المرسل عند بداية سلسلة الرسائل ---
                 if (!msg.isJoined || lastDisplayedSenderId !== msg.user) {
                     const nameDiv = document.createElement('div');
                     nameDiv.className = `sender-name ${isSender ? 'sender' : 'receiver'}`;
-                    nameDiv.textContent = users[msg.user].name;
+                    nameDiv.textContent = users[msg.user]?.name || '';
                     messageWrapper.appendChild(nameDiv);
                 }
                 
                 messageWrapper.appendChild(bubble);
-                messageRow.appendChild(messageWrapper);
+                messageRow.appendChild(messageRow);
                 chatScreen.appendChild(messageRow);
                 lastDisplayedSenderId = msg.user;
             }
