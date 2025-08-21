@@ -185,7 +185,7 @@
                 const parsedData = parseHtmlChat(doc);
                 displayChat(parsedData);
             } catch (error) {
-                console.error('Error parsing file:', error);
+                console.error('Error during processing:', error);
                 alert('حدث خطأ أثناء تحليل الملف. تأكد من أنه ملف محادثة تيليجرام صالح.');
             }
         };
@@ -193,10 +193,6 @@
         reader.readAsText(file, 'UTF-8');
     }
     
-    /**
-     * ✨ [دالة التحليل الأكثر استقرارًا]
-     * تم تحسينها لتكون أكثر متانة وتجنب الأخطاء عند تحليل الملف.
-     */
     function parseHtmlChat(doc) {
         const messages = [];
         const users = {};
@@ -207,7 +203,6 @@
 
         const allMessageNodes = doc.querySelectorAll('.message.default, .message.service');
 
-        // --- الخطوة الأولى: بناء خريطة الرسائل للتعامل مع الردود ---
         allMessageNodes.forEach(node => {
             if (!node.id || node.classList.contains('service')) return;
             
@@ -223,9 +218,8 @@
             }
         });
         
-        currentSenderName = null; // إعادة تعيين
+        currentSenderName = null;
 
-        // --- الخطوة الثانية: تحليل الرسائل لبناء العرض ---
         allMessageNodes.forEach(node => {
             if (node.classList.contains('service')) {
                 const dateText = node.querySelector('.body.details')?.innerText.trim();
@@ -247,7 +241,7 @@
             if (fromNameElem) {
                 currentSenderName = fromNameElem.innerText.trim();
             }
-            if (!currentSenderName) return; // تجاهل الرسائل بدون مرسل معروف
+            if (!currentSenderName) return;
 
             if (!userMap[currentSenderName]) {
                 userCounter++;
@@ -281,7 +275,6 @@
 
         return { messages, users };
     }
-
 
     function displayChat({ messages, users }) {
         const chatScreen = document.getElementById('chatScreen');
@@ -320,11 +313,10 @@
                 let replyHTML = '';
                 if (msg.reply && msg.reply.author) {
                     const replyAuthorName = msg.reply.author;
-                    // Note: userMap is not accessible here, this might be a bug in original logic if names can be duplicated.
-                    // Assuming names are unique for simplicity as per original code's apparent intent.
+                    
+                    // ✨ === هذا هو الجزء الذي تم إصلاحه بالكامل === ✨
                     const replyAuthorId = Object.keys(users).find(key => users[key].name === replyAuthorName) || '';
-                    const replyIsSender = Object.keys(userMap).length > 0 && userMap[users[replyAuthorId]?.name] === senderId;
-                    const replyAuthorClass = replyIsSender ? 'sender' : 'receiver';
+                    const replyAuthorClass = (replyAuthorId === senderId) ? 'sender' : 'receiver';
                     
                     replyHTML = `<div class="reply-quote">
                                     <strong class="${replyAuthorClass}">${replyAuthorName}</strong>
@@ -346,10 +338,7 @@
                 }
                 
                 messageWrapper.appendChild(bubble);
-                
-                // === THIS IS THE CORRECTED LINE ===
                 messageRow.appendChild(messageWrapper); 
-                
                 chatScreen.appendChild(messageRow);
                 lastDisplayedSenderId = msg.user;
             }
