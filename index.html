@@ -303,7 +303,6 @@
                 dateDiv.style.textAlign = 'center';
                 dateDiv.style.margin = '25px 0';
                 dateDiv.style.color = '#ccc';
-                // --- ✨ [إصلاح] إصلاح خطأ بناء الجملة هنا ---
                 dateDiv.innerHTML = `<span style="background:rgba(0,0,0,0.4);padding:5px 15px;border-radius:15px;">${msg.content}</span>`;
                 chatScreen.appendChild(dateDiv);
                 lastDisplayedSenderId = null;
@@ -321,8 +320,11 @@
                 let replyHTML = '';
                 if (msg.reply && msg.reply.author) {
                     const replyAuthorName = msg.reply.author;
+                    // Note: userMap is not accessible here, this might be a bug in original logic if names can be duplicated.
+                    // Assuming names are unique for simplicity as per original code's apparent intent.
                     const replyAuthorId = Object.keys(users).find(key => users[key].name === replyAuthorName) || '';
-                    const replyAuthorClass = (users[replyAuthorId] && userMap[users[replyAuthorId].name] === senderId) ? 'sender' : 'receiver';
+                    const replyIsSender = Object.keys(userMap).length > 0 && userMap[users[replyAuthorId]?.name] === senderId;
+                    const replyAuthorClass = replyIsSender ? 'sender' : 'receiver';
                     
                     replyHTML = `<div class="reply-quote">
                                     <strong class="${replyAuthorClass}">${replyAuthorName}</strong>
@@ -344,7 +346,10 @@
                 }
                 
                 messageWrapper.appendChild(bubble);
-                messageRow.appendChild(messageRow);
+                
+                // === THIS IS THE CORRECTED LINE ===
+                messageRow.appendChild(messageWrapper); 
+                
                 chatScreen.appendChild(messageRow);
                 lastDisplayedSenderId = msg.user;
             }
