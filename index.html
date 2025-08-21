@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محول المحادثات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: #4a90e2;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .upload-section {
+            padding: 30px;
+            text-align: center;
+            border-bottom: 2px dashed #ddd;
+        }
+
+        .upload-area {
+            border: 2px dashed #4a90e2;
+            border-radius: 10px;
+            padding: 40px;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            background: #f8f9ff;
+            border-color: #667eea;
+        }
+
+        .upload-area.dragover {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            transform: scale(1.02);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #4a90e2;
+            margin-bottom: 15px;
+        }
+
+        .chat-display {
+            display: none;
+            height: 70vh;
+            display: flex;
+        }
+
+        .chat-header-display {
+            background: #4a90e2;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Updated for search bar */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex-wrap: wrap; /* For responsiveness */
+        }
+
+        .user-info-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-left: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 16px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .date-separator {
+            text-align: center;
+            margin: 25px 0;
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .date-separator::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #ddd, transparent);
+        }
+
+        .date-separator span {
+            background: #f5f5f5;
+            padding: 5px 15px;
+            border-radius: 15px;
+            position: relative;
+            border: 1px solid #e0e0e0;
+        }
+
+        .message {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-end;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 20px;
+            position: relative;
+            word-wrap: break-word;
+            line-height: 1.4;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .message-time {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 3px;
+            display: block;
+        }
+
+        .reply-indicator {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 5px 10px;
+            margin-bottom: 5px;
+            font-size: 12px;
+            opacity: 0.8;
+            border-right: 3px solid rgba(255,255,255,0.5);
+        }
+
+        .download-btn {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .color-picker {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .color-picker input[type="color"] {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .user-colors {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        /* ✨ --- New Styles for Search --- ✨ */
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .search-container input[type="search"] {
+            border: none;
+            border-radius: 15px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            outline: none;
+            width: 200px;
+            transition: all 0.3s ease;
+        }
+        
+        .search-container input[type="search"]::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .search-container input[type="search"]:focus {
+            background: rgba(255, 255, 255, 0.3);
+            width: 250px;
+        }
+
+        .search-container button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background 0.2s ease;
+        }
+
+        .search-container button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        mark {
+            background-color: #ffeb3b; /* Yellow highlight */
+            color: black;
+            border-radius: 3px;
+            padding: 1px 3px;
+        }
+        /* ✨ --- End of New Styles --- ✨ */
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 محول المحادثات</h1>
+            <p>ارفع ملف النص وشاهد محادثتك تتحول إلى تصميم جميل مثل تيليجرام</p>
+        </div>
+
+        <div class="upload-section" id="uploadSection">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁</div>
+                <h3>اسحب ملفات المحادثة هنا أو اضغط للاختيار</h3>
+                <p>يدعم ملفات .txt و .html (يمكنك رفع أكثر من ملف)</p>
+                <input type="file" id="fileInput" class="file-input" accept=".txt,.html" multiple>
+            </div>
+            
+            <div class="controls">
+                <div class="user-colors">
+                    <div class="color-picker">
+                        <label>لون المستخدم الأول:</label>
+                        <input type="color" id="user1Color" value="#4a90e2">
+                    </div>
+                    <div class="color-picker">
+                        <label>لون المستخدم الثاني:</label>
+                        <input type="color" id="user2Color" value="#e74c3c">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-display" id="chatDisplay">
+            <div style="flex: 1; display: flex; flex-direction: column;">
+                <div class="chat-header-display" id="chatHeader">
+                    <div class="user-info-container">
+                        <div class="avatar" id="currentAvatar">M</div>
+                        <div class="user-info">
+                            <h3 id="chatTitle">المحادثة</h3>
+                            <p id="chatStatus">متصل الآن</p>
+                        </div>
+                    </div>
+                    <div class="search-container">
+                        <input type="search" id="searchInput" placeholder="ابحث في المحادثة..." onkeyup="if(event.key === 'Enter') performSearch()">
+                        <button onclick="performSearch()" title="بحث">🔍</button>
+                        <button onclick="clearSearch()" title="إلغاء البحث">❌</button>
+                    </div>
+                </div>
+                <div class="chat-messages" id="chatMessages"></div>
+                <button class="download-btn" onclick="downloadHTML()">💾 تحميل كملف HTML</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    let parsedMessages = [];
+    let userColors = {};
+    
+    document.getElementById('user1Color').addEventListener('change', updateColors);
+    document.getElementById('user2Color').addEventListener('change', updateColors);
+    
+    function updateColors() {
+        const user1Color = document.getElementById('user1Color').value;
+        const user2Color = document.getElementById('user2Color').value;
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .message.user-m .message-bubble { background: ${user1Color} !important; }
+            .message.user-j .message-bubble { background: ${user2Color} !important; }
+            .avatar:nth-child(odd) { background: ${user1Color} !important; }
+            .avatar:nth-child(even) { background: ${user2Color} !important; }
+        `;
+        document.head.appendChild(style);
+    }
+
+    // ✨ --- Updated File Upload Logic --- ✨
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    
+    uploadArea.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => processFiles(e.target.files));
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, preventDefaults, false)
+    });
+
+    function preventDefaults (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    uploadArea.addEventListener('dragover', () => uploadArea.classList.add('dragover'));
+    uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+
+    uploadArea.addEventListener('drop', (e) => {
+        uploadArea.classList.remove('dragover');
+        processFiles(e.dataTransfer.files);
+    });
+
+    function processFiles(files) {
+        if (files.length === 0) return;
+
+        const readPromises = Array.from(files).map(file => {
+            return new Promise((resolve, reject) => {
+                if (!file.name.endsWith('.txt') && !file.name.endsWith('.html')) {
+                    console.warn(`Skipping unsupported file: ${file.name}`);
+                    resolve(''); 
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = e => {
+                    let content = e.target.result;
+                    // For HTML files, parse and get inner text
+                    if (file.name.endsWith('.html')) {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(content, 'text/html');
+                        content = doc.body.innerText;
+                    }
+                    resolve(content);
+                };
+                reader.onerror = reject;
+                reader.readAsText(file, 'UTF-8');
+            });
+        });
+
+        Promise.all(readPromises)
+            .then(contents => {
+                const combinedContent = contents.join('\n\n');
+                if (!combinedContent.trim()) {
+                    alert('الملفات المرفوعة فارغة أو غير مدعومة.');
+                    return;
+                }
+                parseMessages(combinedContent);
+                displayChat();
+            })
+            .catch(error => {
+                console.error('Error reading files:', error);
+                alert('حدث خطأ أثناء قراءة الملفات.');
+            });
+    }
+
+    function parseMessages(content) {
+        const lines = content.split('\n');
+        parsedMessages = [];
+        let currentDate = '';
+        let currentUser = '';
+        let currentTime = '';
+        let users = new Set();
+
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i].trim();
+            if (!line) continue;
+
+            line = line.replace(/^\uFEFF/, '');
+            line = line.replace(/\s+/g, ' ');
+
+            if (line.match(/\d{1,2}\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}/) ||
+                line.match(/\d{1,2}\s+(يناير|فبراير|مارس|أبريل|مايو|يونيو|يوليو|أغسطس|سبتمبر|أكتوبر|نوفمبر|ديسمبر)\s+\d{4}/)) {
+                currentDate = line;
+                parsedMessages.push({
+                    type: 'date',
+                    content: currentDate
+                });
+                continue;
+            }
+
+            if (line === 'M.' || line === 'J.') {
+                currentUser = line.replace('.', '');
+                users.add(currentUser);
+                continue;
+            }
+
+            if (line.match(/^(Maryoma|Jyyyy)\s*\.?\s*$/)) {
+                const userName = line.replace(/\s*\.?\s*$/, '');
+                currentUser = userName === 'Maryoma' ? 'M' : 'J';
+                users.add(currentUser);
+                continue;
+            }
+
+            const timeMatch = line.match(/^(\d{2}:\d{2})$/);
+            if (timeMatch) {
+                currentTime = timeMatch[1];
+                continue;
+            }
+            
+            if (line === 'Previous messages' || line.startsWith('In reply to this message') || line.startsWith('Not included') || line.endsWith('.pdf') || line.endsWith('.apk') || line.endsWith('MB') || line.endsWith('KB') || line === 'GIF' || line === 'Sticker' || line.match(/^\d+\.\d+\s+(MB|KB)$/)) {
+                continue;
+            }
+
+            if (line && currentUser && line !== currentUser + '.') {
+                const emojiOnlyMatch = line.match(/^[\u{1F300}-\u{1F9FF}]+$/u);
+                
+                parsedMessages.push({
+                    type: 'message',
+                    user: currentUser,
+                    content: line,
+                    time: currentTime || new Date().toLocaleTimeString('ar', { hour: '2-digit', minute: '2-digit' }),
+                    isEmoji: emojiOnlyMatch !== null
+                });
+            }
+        }
+
+        parsedMessages = parsedMessages.filter((msg, index, arr) => {
+            if (msg.type === 'message') {
+                if (!msg.content || msg.content === '.' || msg.content.trim() === '') return false;
+                if (index > 0 && arr[index-1].type === 'message' && arr[index-1].content === msg.content && arr[index-1].user === msg.user) return false;
+            }
+            return true;
+        });
+
+        const userArray = Array.from(users);
+        userColors = {};
+        userArray.forEach((user, index) => {
+            userColors[user] = index === 0 ? document.getElementById('user1Color').value : document.getElementById('user2Color').value;
+        });
+    }
+
+    function displayChat() {
+        const chatMessages = document.getElementById('chatMessages');
+        const chatDisplay = document.getElementById('chatDisplay');
+        const uploadSection = document.getElementById('uploadSection');
+        chatMessages.innerHTML = '';
+        
+        if (parsedMessages.length === 0) {
+            chatMessages.innerHTML = `<div style="text-align: center; padding: 40px; color: #666;"><h3>لم يتم العثور على رسائل!</h3><p>تأكد من أن الملف يحتوي على محادثات بالتنسيق الصحيح</p><button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #4a90e2; color: white; border: none; border-radius: 5px; cursor: pointer;">جرب مرة أخرى</button></div>`;
+            uploadSection.style.display = 'none';
+            chatDisplay.style.display = 'flex';
+            return;
+        }
+        
+        parsedMessages.forEach((msg) => {
+            if (msg.type === 'date') {
+                const dateDiv = document.createElement('div');
+                dateDiv.className = 'date-separator';
+                dateDiv.innerHTML = `<span>${msg.content}</span>`;
+                chatMessages.appendChild(dateDiv);
+            } else if (msg.type === 'message') {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message user-${msg.user.toLowerCase()}`;
+                
+                messageDiv.style.justifyContent = (msg.user === 'M') ? 'flex-end' : 'flex-start';
+                
+                const bubble = document.createElement('div');
+                bubble.className = 'message-bubble';
+                bubble.style.background = userColors[msg.user] || '#4a90e2';
+                bubble.style.color = 'white';
+                
+                if (msg.isEmoji) {
+                    bubble.style.fontSize = '24px';
+                    bubble.style.background = 'transparent';
+                    bubble.style.boxShadow = 'none';
+                    bubble.style.padding = '5px';
+                }
+                
+                bubble.innerHTML = `${msg.content.replace(/</g, "&lt;").replace(/>/g, "&gt;")} <span class="message-time">${msg.time}</span>`;
+                
+                messageDiv.appendChild(bubble);
+                chatMessages.appendChild(messageDiv);
+            }
+        });
+        
+        document.getElementById('chatTitle').textContent = `محادثة بين المستخدمين (${parsedMessages.filter(m => m.type === 'message').length} رسالة)`;
+        uploadSection.style.display = 'none';
+        chatDisplay.style.display = 'flex';
+        
+        setTimeout(() => { chatMessages.scrollTop = chatMessages.scrollHeight; }, 100);
+    }
+
+    // ✨ --- New Search Functions --- ✨
+    function performSearch() {
+        clearSearch(true); // Reset previous searches without clearing input
+        const searchTerm = document.getElementById('searchInput').value;
+        if (!searchTerm.trim()) return;
+        
+        const regex = new RegExp(searchTerm.trim(), 'gi');
+        let matchCount = 0;
+
+        document.querySelectorAll('.message-bubble').forEach(bubble => {
+            const timeElement = bubble.querySelector('.message-time');
+            // We search only in the text content, not the time
+            const nodesToSearch = Array.from(bubble.childNodes).filter(n => n.nodeType === 3); // Text nodes only
+            
+            nodesToSearch.forEach(textNode => {
+                const text = textNode.textContent;
+                if (regex.test(text)) {
+                    matchCount++;
+                    const highlighted = text.replace(regex, match => `<mark>${match}</mark>`);
+                    const span = document.createElement('span');
+                    span.innerHTML = highlighted;
+                    bubble.replaceChild(span, textNode);
+                }
+            });
+        });
+
+        if (matchCount === 0) {
+            alert('لم يتم العثور على نتائج للبحث.');
+        }
+    }
+
+    function clearSearch(keepInput = false) {
+        document.querySelectorAll('.message-bubble mark').forEach(mark => {
+            const parent = mark.parentNode;
+            parent.replaceWith(document.createTextNode(parent.textContent));
+        });
+        // After replacements, normalize the parent to merge adjacent text nodes
+        document.querySelectorAll('.message-bubble').forEach(bubble => bubble.normalize());
+        
+        if (!keepInput) {
+            document.getElementById('searchInput').value = '';
+        }
+    }
+
+    function downloadHTML() {
+        const user1Color = document.getElementById('user1Color').value;
+        const user2Color = document.getElementById('user2Color').value;
+        
+        const htmlContent = `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المحادثة المحولة</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; padding: 20px; }
+        .chat-container { max-width: 800px; margin: 0 auto; background: white; min-height: 100vh; display: flex; flex-direction: column; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .chat-header { background: #4a90e2; color: white; padding: 15px 20px; display: flex; align-items: center; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; margin-left: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
+        .chat-messages { flex: 1; padding: 20px; }
+        .date-separator { text-align: center; margin: 25px 0; color: #666; font-size: 14px; position: relative; }
+        .date-separator::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: linear-gradient(to right, transparent, #ddd, transparent); }
+        .date-separator span { background: #f5f5f5; padding: 5px 15px; border-radius: 15px; position: relative; border: 1px solid #e0e0e0; }
+        .message { margin-bottom: 8px; display: flex; align-items: flex-end; }
+        .message-bubble { max-width: 70%; padding: 10px 15px; border-radius: 20px; word-wrap: break-word; line-height: 1.4; font-size: 14px; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .message-time { font-size: 11px; opacity: 0.7; margin-top: 3px; display: block; }
+        .user-m { justify-content: flex-end; }
+        .user-j { justify-content: flex-start; }
+        .user-m .message-bubble { background: ${user1Color}; }
+        .user-j .message-bubble { background: ${user2Color}; }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="avatar" style="background: ${user1Color};">M</div>
+            <div class="user-info">
+                <h3>المحادثة المحولة</h3>
+                <p>تم تحويلها بنجاح</p>
+            </div>
+        </div>
+        <div class="chat-messages">
+            ${document.getElementById('chatMessages').innerHTML.replace(/<mark>/g, '').replace(/<\/mark>/g, '')}
+        </div>
+    </div>
+</body>
+</html>`;
+
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'المحادثة_المحولة.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+</script>
+</body>
+</html>
