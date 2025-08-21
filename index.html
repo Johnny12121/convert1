@@ -5,186 +5,171 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Telegram Chat Viewer</title>
+  <title>Telegram Chat Viewer Pro</title>
   
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
   
   <style>
     :root {
-      --sender-bubble-bg: #3a0e61;
+      --sender-bubble-bg: #6815a3;
       --receiver-bubble-bg: #2EADD4;
-      --body-bg: url("https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop");
-      --main-bg: rgba(58, 58, 58, 0.4);
-      --glass-bg: rgba(0, 0, 0, 0.2);
+      --body-bg-gradient: linear-gradient(135deg, #12031a 0%, #30143a 100%);
+      --main-bg: rgba(20, 2, 30, 0.5);
+      --glass-bg: rgba(0, 0, 0, 0.25);
+      --font-family: 'Tajawal', sans-serif;
     }
 
-    html {
-      box-sizing: border-box;
-    }
+    html { box-sizing: border-box; }
 
     body {
-      background-image: var(--body-bg);
-      background-repeat: no-repeat;
-      background-size: cover;
-      background-position: center;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-image: var(--body-bg-gradient);
+      font-family: var(--font-family);
       min-height: 100vh;
       padding-top: 2rem;
       padding-bottom: 2rem;
     }
 
-    *, *:before, *:after {
-      box-sizing: inherit;
-    }
+    *, *:before, *:after { box-sizing: inherit; }
 
     /* Main App Window */
     .app-window {
       background: var(--main-bg);
-      backdrop-filter: blur(100px);
-      border-radius: 8px;
-      box-shadow: 0px 32px 64px rgba(0, 0, 0, 0.56), 0px 2px 21px rgba(0, 0, 0, 0.55);
-      min-height: 90vh;
+      backdrop-filter: blur(25px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      box-shadow: 0px 20px 50px rgba(0, 0, 0, 0.5);
+      height: 90vh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
 
     /* Header / Navbar */
-    .nav-bar {
-      background: #202020;
-      color: #ffffff;
-      padding: 0.5rem 1rem;
-      flex-shrink: 0;
+    .nav-bar { background: rgba(0,0,0,0.2); color: #e0e0e0; padding: 0.5rem 1rem; flex-shrink: 0; text-align: center; }
+
+    /* --- ✨ POINT 4: STICKY HEADER/FOOTER LAYOUT --- */
+    #chatSection {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden; /* Prevent parent from scrolling */
     }
 
     /* Chat Header */
     .chat-info-box {
       background: var(--glass-bg);
-      border-bottom: 0.5px solid rgb(71, 71, 71);
-      backdrop-filter: blur(100px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       align-items: center;
-      min-height: 65px;
-      padding: 0.5rem 1.5rem;
+      min-height: 70px;
+      padding: 0.5rem 1rem;
       flex-shrink: 0;
     }
     
-    .title-user { font-weight: 600; font-size: 16px; line-height: 21px; color: #ffffff; }
-    .user-avatar {
-        width: 45px;
-        height: 45px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        color: white;
-        font-size: 20px;
-    }
-
     /* Chat Screen (Messages Area) */
     .chat-screen {
-      flex-grow: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
+      flex-grow: 1; /* Takes up all available space */
+      overflow-y: auto; /* Only this element scrolls */
       padding: 1rem;
     }
     
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.4); border-radius: 10px; }
-
-    /* Message Bubbles */
-    .pm-text-resive, .pm-text-send {
-      font-size: 15px;
-      line-height: 1.5;
-      color: #FFFFFF;
-      margin-top: 0.5rem;
-      padding: 10px 15px;
-      display: inline-block;
-      width: fit-content;
-      max-width: 75%;
-      word-wrap: break-word;
-      text-align: right;
-    }
-    .pm-text-send { background: var(--sender-bubble-bg); border-radius: 18px 18px 4px 18px; margin-right: 10px;}
-    .pm-text-resive { background: var(--receiver-bubble-bg); border-radius: 18px 18px 18px 4px; margin-left: 10px;}
-    .pm-emoji-only { background: transparent !important; font-size: 48px; padding: 5px; box-shadow: none; }
-    .time-pm { font-size: 12px; color: #A1AAB3; margin-right: 8px; user-select: none; }
-
-    /* Input Area */
+    /* Chat Input Area */
     .chat-input-box {
         background: var(--glass-bg);
-        border-top: 0.5px solid rgb(71, 71, 71);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
         padding: 0.75rem 1rem;
         flex-shrink: 0;
     }
-    .input-wrapper { background: rgba(32, 32, 32, 0.5); border-radius: 8px; padding: 0.75rem; }
+
+    /* --- ✨ POINT 1 & 7: IMPROVED HEADER & DOWNLOAD BUTTON --- */
+    .title-user { font-weight: 700; font-size: 17px; color: #ffffff; }
+    .user-avatar { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; font-size: 22px; }
+    .header-actions button { background: none; border: none; color: #b0b0b0; font-size: 20px; cursor: pointer; padding: 5px; transition: color 0.2s; }
+    .header-actions button:hover { color: white; }
+    #searchContainer { display: flex; align-items: center; gap: 5px; background-color: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 20px; }
+    #searchInput { all: unset; color: white; width: 120px; transition: all 0.3s ease; }
+    #searchResultCounter { font-size: 13px; color: #aaa; min-width: 40px; text-align: center; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 10px; }
+
+    /* --- ✨ POINT 2 & 3: IMPROVED MESSAGE BUBBLES & REPLIES --- */
+    .message-row { margin-bottom: 0.2rem; }
+    .message-bubble { font-size: 15px; line-height: 1.5; color: #FFFFFF; padding: 10px 15px; display: inline-block; width: fit-content; max-width: 75%; text-align: right; word-wrap: break-word; }
+    .pm-text-send { background: var(--sender-bubble-bg); border-radius: 20px 8px 20px 20px; }
+    .pm-text-resive { background: var(--receiver-bubble-bg); border-radius: 8px 20px 20px 20px; }
+    .time-pm { font-size: 12px; color: #d0d0d0; opacity: 0.8; margin-right: 8px; user-select: none; }
+    .reply-quote { background: rgba(0,0,0,0.2); border-right: 3px solid var(--receiver-bubble-bg); padding: 8px; margin-bottom: 8px; border-radius: 8px; font-size: 14px; opacity: 0.9; }
+    .pm-text-send .reply-quote { border-right-color: #c990ff; }
+    .reply-quote strong { font-size: 13px; font-weight: 700; }
+    
+    .input-wrapper { background: rgba(0,0,0, 0.2); border-radius: 12px; padding: 0.75rem; }
     .input-chat { all: unset; color: #cecece; width: 100%;}
     .input-chat::placeholder { color: #8A8A8A; }
 
-    /* --- UPLOAD & OTHER FEATURES STYLES --- */
-    #uploadContainer { text-align: center; padding: 50px 20px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-    .upload-area { border: 2px dashed #ffffff55; border-radius: 15px; padding: 60px 40px; margin: 20px 0; transition: all 0.3s ease; cursor: pointer; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(10px); max-width: 600px; }
-    .upload-area:hover, .upload-area.dragover { background: rgba(0, 0, 0, 0.4); border-color: #ffffff99; }
+    /* --- ✨ POINT 5 & 6: IMPROVED HOMEPAGE --- */
+    #uploadContainer { color: white; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; background: transparent; }
+    #uploadContainer h1 { font-weight: 700; font-size: 2.5rem; text-shadow: 0 0 15px rgba(0,0,0,0.5); }
+    .upload-area { border: 2px dashed #ffffff55; border-radius: 15px; padding: 50px; margin: 20px 0; transition: all 0.3s ease; cursor: pointer; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(10px); max-width: 600px; transform: scale(1); }
+    .upload-area:hover, .upload-area.dragover { background: rgba(0, 0, 0, 0.4); border-color: #ffffff99; transform: scale(1.03); }
     .upload-icon { font-size: 48px; color: #fff; margin-bottom: 15px; }
+    .upload-area h3 { color: white; font-weight: 500; }
+    .upload-area p { color: #b0b0b0; }
     .file-input { display: none; }
-
-    .date-separator { text-align: center; margin: 25px 0; color: #ccc; font-size: 14px; }
-    .date-separator span { background: rgba(0, 0, 0, 0.4); padding: 5px 15px; border-radius: 15px; }
     
-    #searchContainer { display: flex; align-items: center; gap: 5px; }
-    #searchInput { border: none; border-radius: 15px; padding: 6px 10px; background: rgba(255, 255, 255, 0.1); color: white; outline: none; width: 150px; transition: all 0.3s ease; }
-    #searchInput:focus { background: rgba(255, 255, 255, 0.2); width: 200px; }
-    #searchContainer button { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
-    
-    mark { background-color: #ffeb3b; color: black; border-radius: 3px; padding: 1px 3px; }
+    .hidden { display: none !important; }
+    .found-message { box-shadow: 0 0 10px 3px #ffeb3b; border-radius: 20px; }
   </style>
 </head>
 
 <body>
   <div class="container">
     <div class="row justify-content-center">
-      <div class="col-md-9 col-lg-8">
+      <div class="col-md-10 col-lg-8">
         <div class="app-window">
             
             <div class="nav-bar">
-                <span>Telegram Chat Viewer</span>
+                <span>Telegram Chat Viewer Pro</span>
             </div>
 
             <div id="uploadContainer">
+                <h1>عارض محادثات تيليجرام</h1>
+                <p style="color: #ccc; font-size: 1.1rem;">ارفع ملف محادثتك واستعرضه بتصميم احترافي وجميل</p>
                 <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon">📁</div>
-                    <h3>اسحب ملفات المحادثة هنا أو اضغط للاختيار</h3>
-                    <p>يدعم ملفات .txt و .html (يمكنك رفع أكثر من ملف)</p>
+                    <div class="upload-icon">🚀</div>
+                    <h3>اسحب الملفات إلى هنا أو اضغط للاختيار</h3>
+                    <p>يدعم ملفات .txt و .html</p>
                     <input type="file" id="fileInput" class="file-input" accept=".txt,.html" multiple>
                 </div>
-                <p style="color: #ccc;">ارفع ملف محادثة تم تصديره لعرضه بالتصميم الجديد</p>
             </div>
 
-            <div id="chatSection" style="display: none; flex-grow: 1; display: flex; flex-direction: column;">
+            <div id="chatSection" class="hidden">
                 <div class="chat-info-box">
-                    <div class="row align-items-center">
-                        <div class="col-6">
-                            <div class="d-flex align-items-center">
-                                <div class="user-avatar" id="chatAvatar"></div>
-                                <div class="mx-3">
-                                    <span class="title-user" id="chatTitle">اسم المحادثة</span>
-                                    <div class="short-msg-meadia" id="chatStatus" style="color: #888888;">... رسالة</div>
-                                </div>
-                            </div>
+                    <div class="row align-items-center gx-2">
+                        <div class="col-auto">
+                           <div class="user-avatar" id="chatAvatar"></div>
                         </div>
-                        <div class="col-6 d-flex justify-content-end">
+                        <div class="col">
+                            <div class="title-user" id="chatTitle"></div>
+                            <div class="short-msg-meadia" id="chatStatus" style="color: #b0b0b0; font-size: 14px;"></div>
+                        </div>
+                        <div class="col-auto d-flex align-items-center header-actions">
                             <div id="searchContainer">
+                                <button id="searchPrevBtn" title="النتيجة السابقة">🔼</button>
+                                <span id="searchResultCounter">0 / 0</span>
+                                <button id="searchNextBtn" title="النتيجة التالية">🔽</button>
                                 <input type="search" id="searchInput" placeholder="بحث..." onkeyup="if(event.key === 'Enter') performSearch()">
-                                <button onclick="performSearch()" title="بحث">🔍</button>
-                                <button onclick="clearSearch()" title="إلغاء البحث">❌</button>
                             </div>
+                            <button onclick="downloadHTML()" title="تحميل المحادثة">💾</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="chat-screen" id="chatScreen">
-                    </div>
+                <div class="chat-screen" id="chatScreen"></div>
 
                 <div class="chat-input-box">
                     <div class="input-wrapper d-flex align-items-center">
@@ -207,32 +192,34 @@
     const uploadArea = document.getElementById('uploadArea');
     const fileInput = document.getElementById('fileInput');
     
+    // Search state
+    let searchResults = [];
+    let currentSearchIndex = -1;
+
     uploadArea.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', (e) => processFiles(e.target.files));
-
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         uploadArea.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
     });
-
     uploadArea.addEventListener('dragover', () => uploadArea.classList.add('dragover'));
     uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
     uploadArea.addEventListener('drop', (e) => {
         uploadArea.classList.remove('dragover');
         processFiles(e.dataTransfer.files);
     });
+    document.getElementById('searchNextBtn').addEventListener('click', navigateSearchResults);
+    document.getElementById('searchPrevBtn').addEventListener('click', navigateSearchResults);
+
 
     function processFiles(files) {
         if (files.length === 0) return;
         const readPromises = Array.from(files).map(file => new Promise((resolve, reject) => {
-            if (!file.name.endsWith('.txt') && !file.name.endsWith('.html')) {
-                resolve(''); return;
-            }
+            if (!file.name.endsWith('.txt') && !file.name.endsWith('.html')) { resolve(''); return; }
             const reader = new FileReader();
             reader.onload = e => {
                 let content = e.target.result;
                 if (file.name.endsWith('.html')) {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(content, 'text/html');
+                    const doc = new DOMParser().parseFromString(content, 'text/html');
                     content = doc.body.innerText;
                 }
                 resolve(content);
@@ -243,89 +230,79 @@
 
         Promise.all(readPromises).then(contents => {
             const combinedContent = contents.join('\n\n');
-            if (!combinedContent.trim()) {
-                alert('الملفات المرفوعة فارغة أو غير مدعومة.');
-                return;
-            }
-            const parsedMessages = parseMessages(combinedContent);
-            displayChat(parsedMessages);
-        }).catch(error => {
-            console.error('Error reading files:', error);
-            alert('حدث خطأ أثناء قراءة الملفات.');
-        });
+            if (!combinedContent.trim()) { alert('الملفات فارغة أو غير مدعومة.'); return; }
+            const parsedData = parseMessages(combinedContent);
+            displayChat(parsedData);
+        }).catch(error => { console.error('Error reading files:', error); alert('حدث خطأ أثناء قراءة الملفات.'); });
     }
 
     /**
-     * ✅ **FIXED: Professional Message Parsing Logic**
-     * This function now correctly identifies the current user and keeps them
-     * for consecutive messages until a new user identifier is found.
+     * ✅ **FIXED: Logic to handle user names, replies, and consecutive messages correctly.**
      */
     function parseMessages(content) {
         const lines = content.split('\n');
-        const parsedMessages = [];
-        let currentUser = null; // Start with no user
+        const messages = [];
+        let currentUser = null;
         let currentTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+        let pendingReply = null;
+        let users = {};
+        let userCount = 0;
 
-        for (const line of lines) {
-            const trimmedLine = line.trim().replace(/^\uFEFF/, '');
+        for (let i = 0; i < lines.length; i++) {
+            const trimmedLine = lines[i].trim().replace(/^\uFEFF/, '');
             if (!trimmedLine) continue;
 
-            // Check for Date Separator
             if (trimmedLine.match(/\d{1,2}\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}/i)) {
-                parsedMessages.push({ type: 'date', content: trimmedLine });
+                messages.push({ type: 'date', content: trimmedLine });
                 continue;
             }
 
-            // Check for Time
             const timeMatch = trimmedLine.match(/^(\d{1,2}:\d{2})$/);
-            if (timeMatch) {
-                currentTime = timeMatch[1];
+            if (timeMatch) { currentTime = timeMatch[1]; continue; }
+            
+            if (trimmedLine.toLowerCase() === 'in reply to this message') {
+                pendingReply = { author: 'User', text: lines[i + 1] ? lines[i + 1].trim() : '' };
+                i++; // Skip the next line as it's part of the reply
                 continue;
             }
             
-            // Check for User Identifier
             let isUserIdentifier = false;
-            if (trimmedLine.match(/^(M|Maryoma)\.?$/i)) {
-                currentUser = 'M'; // User 'M' will be the sender (right side)
-                isUserIdentifier = true;
-            } else if (trimmedLine.match(/^(J|Jyyyy)\.?$/i)) {
-                currentUser = 'J'; // User 'J' will be the receiver (left side)
+            let userNameMatch = trimmedLine.match(/^(M|Maryoma|J|Jyyyy)\.?$/i);
+            if(userNameMatch) {
+                const userName = userNameMatch[0].replace('.','');
+                if (!users[userName]) {
+                    users[userName] = (userCount === 0) ? 'M' : 'J';
+                    userCount++;
+                }
+                currentUser = users[userName];
                 isUserIdentifier = true;
             }
 
-            // If the line is just a user ID, or a media message, skip it.
             if (isUserIdentifier || trimmedLine.match(/^(gif|sticker|photo|video)/i)) {
                 continue;
             }
 
-            // If we have a current user, this line is their message
             if (currentUser) {
                 const emojiOnlyMatch = trimmedLine.match(/^[\u{1F300}-\u{1F9FF}\s]+$/u);
-                parsedMessages.push({
-                    type: 'message',
-                    user: currentUser,
-                    content: trimmedLine,
-                    time: currentTime,
-                    isEmoji: !!emojiOnlyMatch
+                messages.push({
+                    type: 'message', user: currentUser, content: trimmedLine,
+                    time: currentTime, isEmoji: !!emojiOnlyMatch, reply: pendingReply
                 });
+                pendingReply = null; // Reset reply after using it
             }
         }
-        return parsedMessages;
+        return { messages, users };
     }
 
-    function displayChat(messages) {
+    function displayChat({ messages, users }) {
         const chatScreen = document.getElementById('chatScreen');
         chatScreen.innerHTML = '';
-        
-        if (messages.length === 0) {
-            alert("لم يتم العثور على رسائل قابلة للعرض في الملف.");
-            return;
-        }
+        if (messages.length === 0) { alert("لم يتم العثور على رسائل قابلة للعرض."); return; }
 
-        uploadContainer.style.display = 'none';
-        chatSection.style.display = 'flex';
+        uploadContainer.classList.add('hidden');
+        chatSection.classList.remove('hidden');
 
-        messages.forEach(msg => {
+        messages.forEach((msg, index) => {
             if (msg.type === 'date') {
                 const dateDiv = document.createElement('div');
                 dateDiv.className = 'date-separator';
@@ -333,49 +310,60 @@
                 chatScreen.appendChild(dateDiv);
             } else if (msg.type === 'message') {
                 const messageRow = document.createElement('div');
-                messageRow.className = 'row';
-
-                const bubble = document.createElement('span');
-                bubble.innerHTML = `${msg.content.replace(/</g, "&lt;")} <span class="time-pm">${msg.time}</span>`;
+                messageRow.className = 'd-flex message-row';
                 
-                if (msg.user === 'M') { // Sender
-                    messageRow.classList.add('justify-content-end');
-                    bubble.className = 'pm-text-send';
-                } else { // Receiver
-                    bubble.className = 'pm-text-resive';
+                const bubble = document.createElement('div');
+                bubble.className = 'message-bubble';
+                bubble.dataset.id = index;
+
+                let replyHTML = '';
+                if(msg.reply) {
+                    replyHTML = `<div class="reply-quote"><strong>${msg.reply.author}</strong><div>${msg.reply.text.replace(/</g, "&lt;")}</div></div>`;
                 }
-                if (msg.isEmoji) bubble.classList.add('pm-emoji-only');
+
+                bubble.innerHTML = `${replyHTML}${msg.content.replace(/</g, "&lt;")} <span class="time-pm">${msg.time}</span>`;
+                
+                if (msg.user === 'M') {
+                    messageRow.classList.add('justify-content-end');
+                    bubble.classList.add('pm-text-send');
+                } else {
+                    bubble.classList.add('pm-text-resive');
+                }
                 
                 messageRow.appendChild(bubble);
                 chatScreen.appendChild(messageRow);
             }
         });
         
-        document.getElementById('chatTitle').textContent = `محادثة خاصة`;
+        const userNames = Object.keys(users);
+        document.getElementById('chatTitle').textContent = userNames.length === 2 ? `${userNames[0]} و ${userNames[1]}` : 'محادثة خاصة';
         const avatar = document.getElementById('chatAvatar');
-        avatar.textContent = `💬`;
-        avatar.style.backgroundColor = 'var(--receiver-bubble-bg)';
+        avatar.textContent = userNames.length > 0 ? userNames[0].charAt(0).toUpperCase() : '👤';
+        avatar.style.backgroundColor = 'var(--sender-bubble-bg)';
         document.getElementById('chatStatus').textContent = `${messages.filter(m => m.type === 'message').length} رسالة`;
         
         chatScreen.scrollTop = chatScreen.scrollHeight;
     }
 
     function performSearch() {
-        clearSearch(true);
+        clearSearchHighlights();
         const searchTerm = document.getElementById('searchInput').value;
-        if (!searchTerm.trim()) return;
-        
-        const regex = new RegExp(searchTerm.trim(), 'gi');
-        let matchCount = 0;
+        if (!searchTerm.trim()) {
+            updateSearchResultCounter(0, 0);
+            return;
+        }
 
-        document.querySelectorAll('.pm-text-send, .pm-text-resive').forEach(bubble => {
+        const regex = new RegExp(searchTerm.trim(), 'gi');
+        searchResults = [];
+        
+        document.querySelectorAll('.message-bubble').forEach(bubble => {
             const timeElement = bubble.querySelector('.time-pm');
             const timeHTML = timeElement ? timeElement.outerHTML : '';
             if (timeElement) timeElement.remove();
 
             const contentHTML = bubble.innerHTML;
-            if (regex.test(contentHTML)) {
-                matchCount++;
+            if (regex.test(bubble.innerText)) {
+                searchResults.push(bubble);
                 const highlightedHTML = contentHTML.replace(regex, match => `<mark>${match}</mark>`);
                 bubble.innerHTML = highlightedHTML + timeHTML;
             } else {
@@ -383,10 +371,39 @@
             }
         });
 
-        if (matchCount === 0) alert('لم يتم العثور على نتائج للبحث.');
+        if (searchResults.length > 0) {
+            currentSearchIndex = 0;
+            navigateToResult(currentSearchIndex);
+        }
+        updateSearchResultCounter(currentSearchIndex + 1, searchResults.length);
+    }
+    
+    function navigateSearchResults(event) {
+        if (searchResults.length === 0) return;
+        if (event.target.id === 'searchNextBtn') {
+            currentSearchIndex = (currentSearchIndex + 1) % searchResults.length;
+        } else {
+            currentSearchIndex = (currentSearchIndex - 1 + searchResults.length) % searchResults.length;
+        }
+        navigateToResult(currentSearchIndex);
+        updateSearchResultCounter(currentSearchIndex + 1, searchResults.length);
+    }
+    
+    function navigateToResult(index) {
+        document.querySelectorAll('.found-message').forEach(el => el.classList.remove('found-message'));
+        const target = searchResults[index];
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            target.classList.add('found-message');
+        }
+    }
+    
+    function updateSearchResultCounter(current, total) {
+       document.getElementById('searchResultCounter').textContent = `${total > 0 ? current : 0} / ${total}`;
     }
 
-    function clearSearch(keepInput = false) {
+    function clearSearchHighlights() {
+        document.querySelectorAll('.found-message').forEach(el => el.classList.remove('found-message'));
         document.querySelectorAll('mark').forEach(mark => {
             const parent = mark.parentNode;
             if (parent) {
@@ -394,8 +411,27 @@
               parent.normalize();
             }
         });
-        if (!keepInput) document.getElementById('searchInput').value = '';
+        searchResults = [];
+        currentSearchIndex = -1;
     }
+    
+    function downloadHTML() {
+        const chatScreen = document.getElementById('chatScreen');
+        if (!chatScreen || !chatScreen.innerHTML.trim()) { alert("لا يوجد محتوى لتحميله."); return; }
+        
+        const htmlContent = `<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>المحادثة المحولة</title><style>body{font-family:sans-serif;background:#1a1a1a;color:white;padding:20px;}.chat-screen{max-width:800px;margin:auto;}.d-flex{display:flex;}.justify-content-end{justify-content:flex-end;}.message-row{margin-bottom:0.2rem;}.message-bubble{font-size:15px;line-height:1.5;padding:10px 15px;width:fit-content;max-width:75%;border-radius:20px;word-wrap:break-word;}.pm-text-send{background:#6815a3;border-radius:20px 8px 20px 20px;color:white;}.pm-text-resive{background:#2EADD4;border-radius:8px 20px 20px 20px;color:white;}.time-pm{font-size:12px;opacity:0.8;margin-right:8px;}.reply-quote{background:rgba(0,0,0,0.2);border-right:3px solid;padding:8px;margin-bottom:8px;border-radius:8px;}.date-separator{text-align:center;margin:25px 0;color:#ccc;} .date-separator span{background:rgba(0,0,0,0.4);padding:5px 15px;border-radius:15px;}</style></head><body><div class="chat-screen">${chatScreen.innerHTML}</div></body></html>`;
+
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'المحادثة_المحولة.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
 </script>
 
 </body>
